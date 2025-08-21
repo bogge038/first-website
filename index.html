@@ -1,358 +1,389 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>YouTube.com Clone</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="styles/general.css">
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/video.css">
-    <link rel="stylesheet" href="styles/sidebar.css">
-  </head>
-  <body>
-    <header class="header">
-      <div class="left-section">
-        <img class="hamburger-menu" src="icons/hamburger-menu.svg">
-        <img class="youtube-logo" src="icons/youtube-logo.svg">
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EcoFootprint Tracker</title>
+  <meta name="description" content="Simple, client‑side website to estimate your annual environmental footprint via a short questionnaire. Ready for GitHub Pages." />
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#121821; --muted:#8aa0b5; --text:#e6eef7; --accent:#5dd39e; --accent2:#7aa7ff; --warn:#ffbd59; --danger:#ff6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:linear-gradient(180deg,#0b0f14,#0e141d 55%,#0b0f14);color:var(--text);}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    h1{font-size:clamp(22px,4vw,34px);margin:0}
+    .tag{font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .card{grid-column:span 12;background:var(--card);border:1px solid #1e2633;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    @media(min-width:900px){.left{grid-column:span 7}.right{grid-column:span 5}}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    label{font-size:14px;color:#b9c7d6}
+    input,select{background:#0e141d;border:1px solid #232c3c;color:var(--text);padding:10px 12px;border-radius:12px;font-size:14px}
+    input[type="number"]{appearance:textfield}
+    input:focus,select:focus{outline:2px solid #2c7be5;outline-offset:1px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    button{border:0;border-radius:12px;padding:10px 14px;font-weight:600;font-size:14px;cursor:pointer}
+    .primary{background:var(--accent);color:#062217}
+    .muted{background:#1b2330;color:#c6d3e3}
+    .danger{background:var(--danger);color:#300}
+    .warn{background:var(--warn);color:#3a2b00}
+    .note{font-size:12px;color:var(--muted)}
+    .kpi{display:flex;gap:12px;align-items:center}
+    .kpi .num{font-size:32px;font-weight:800}
+    .list{display:grid;gap:10px}
+    .list .item{display:flex;justify-content:space-between;align-items:center;background:#0e141d;border:1px solid #1f2937;padding:10px 12px;border-radius:12px}
+    .small{font-size:12px;color:var(--muted)}
+    .chart{width:100%;height:280px;position:relative}
+    canvas{width:100%;height:100%}
+    details{background:#0e141d;border:1px solid #1f2937;border-radius:12px;padding:12px}
+    summary{cursor:pointer;font-weight:700}
+    footer{margin-top:24px;color:var(--muted);font-size:12px}
+    a{color:var(--accent2);text-decoration:none}
+    .pill{padding:2px 8px;border-radius:999px;border:1px solid #233147;background:#0c111a;color:#9fb3c8;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>EcoFootprint Tracker</h1>
+        <div class="tag">All in browser. No signup. No tracking.</div>
       </div>
-      <div class="middle-section">
-        <input class="search-bar" type="text" placeholder="Search">
-        <button class="search-button">
-          <img class="search-icon" src="icons/search.svg">
-          <div class="tooltip">Search</div>
-        </button>
-        <!-- Put position absolute inside position relative -->
-        <button class="voice-search-button">
-          <img class="voice-search-icon" src="icons/voice-search-icon.svg">
-          <div class="tooltip">Search with your voice</div>
-        </button>
-      </div>
-      <div class="right-section">
-        <div class="upload-icon-container">
-          <img class="upload-icon" src="icons/upload.svg">
-          <div class="tooltip">Create</div>
-        </div>
-        <div class="youtube-apps-icon-container">
-          <img class="youtube-apps-icon" src="icons/youtube-apps.svg">
-          <div class="tooltip">YouTube Apps</div>
-        </div>
-        <div class="notifications-icon-container">
-          <img class="notifications-icon" src="icons/notifications.svg">
-          <div class="notifications-count">3</div>
-          <div class="tooltip">Notifications</div>
-        </div>
-        <img class="current-user-picture" src="channel-pictures/my-channel.jpeg">
-      </div>
+      <div class="pill" id="ver">v1.0</div>
     </header>
 
-    <nav class="sidebar">
-      <div class="sidebar-link">
-        <img src="icons/home.svg">
-        <div>Home</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/explore.svg">
-        <div>Explore</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/subscriptions.svg">
-        <div>Subscriptions</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/originals.svg">
-        <div>Originals</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/youtube-music.svg">
-        <div>YouTube Music</div>
-      </div>
-      <div class="sidebar-link">
-        <img src="icons/library.svg">
-        <div>Library</div>
-      </div>
-    </nav>
+    <div class="grid">
+      <section class="card left" aria-labelledby="formTitle">
+        <h2 id="formTitle">Questions</h2>
+        <form id="quiz" novalidate>
+          <h3>Home energy</h3>
+          <div class="row">
+            <div class="field">
+              <label for="elec">Electricity used per year (kWh)</label>
+              <input id="elec" type="number" min="0" step="1" placeholder="e.g. 3200" />
+            </div>
+            <div class="field">
+              <label for="grid">Grid emission factor (kg CO₂e / kWh)</label>
+              <select id="grid">
+                <option value="0.25">EU avg 0.25</option>
+                <option value="0.39">US avg 0.39</option>
+                <option value="0.45">World avg 0.45</option>
+                <option value="custom">Custom…</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" id="gridCustomWrap" style="display:none">
+            <label for="gridCustom">Custom grid factor (kg CO₂e / kWh)</label>
+            <input id="gridCustom" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
 
-    <main>
-      <section class="video-grid">
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-1.webp">
-            <div class="video-time">14:20</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-1.jpeg">
+          <div class="row">
+            <div class="field">
+              <label for="gas">Natural gas used per year (kWh)</label>
+              <input id="gas" type="number" min="0" step="1" placeholder="0 if none" />
+              <div class="note">~0.202 kg CO₂e per kWh gas (default)</div>
             </div>
-            <div class="video-info">
-              <p class="video-title">
-                Talking Tech and AI with Google CEO Sundar Pichai!
-              </p>
-              <p class="video-author">
-                Marques Brownlee
-              </p>
-              <p class="video-stats">
-                3.4M views &#183; 6 months ago
-              </p>
+            <div class="field">
+              <label for="heatFactor">Gas emission factor (kg CO₂e / kWh)</label>
+              <input id="heatFactor" type="number" min="0" step="0.001" value="0.202" />
             </div>
           </div>
-        </div>
 
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-2.webp">
-            <div class="video-time">8:22</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-2.jpeg">
+          <h3>Transport</h3>
+          <div class="row">
+            <div class="field">
+              <label for="carKm">Car distance per year (km)</label>
+              <input id="carKm" type="number" min="0" step="1" placeholder="e.g. 12000" />
             </div>
-            <div class="video-info">
-              <p class="video-title">
-                Try Not To Laugh Challenge #9
-              </p>
-              <p class="video-author">
-                Markiplier
-              </p>
-              <p class="video-stats">
-                19M views &#183; 4 years ago
-              </p>
+            <div class="field">
+              <label for="carType">Car type</label>
+              <select id="carType">
+                <option value="petrol">Petrol</option>
+                <option value="diesel">Diesel</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="ev">Electric</option>
+              </select>
             </div>
           </div>
-        </div>
+          <div class="row">
+            <div class="field" id="lper100Wrap">
+              <label for="lper100">Fuel economy (L/100 km)</label>
+              <input id="lper100" type="number" min="0" step="0.1" placeholder="e.g. 6.5" />
+            </div>
+            <div class="field" id="kwhper100Wrap" style="display:none">
+              <label for="kwhper100">Energy use (kWh/100 km)</label>
+              <input id="kwhper100" type="number" min="0" step="0.1" placeholder="e.g. 18" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="flightKm">Flight distance per year (passenger‑km)</label>
+              <input id="flightKm" type="number" min="0" step="1" placeholder="e.g. 5000" />
+            </div>
+            <div class="field">
+              <label for="flightFactor">Flight factor (kg CO₂e / passenger‑km)</label>
+              <input id="flightFactor" type="number" min="0" step="0.001" value="0.15" />
+              <div class="note">Includes rough non‑CO₂ effects multiplier.</div>
+            </div>
+          </div>
 
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-3.webp">
-            <div class="video-time">9:13</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-3.jpeg">
+          <h3>Diet</h3>
+          <div class="row">
+            <div class="field">
+              <label for="diet">Diet type</label>
+              <select id="diet">
+                <option value="2.5">Omnivore</option>
+                <option value="1.7">Low‑meat</option>
+                <option value="1.4">Vegetarian</option>
+                <option value="1.0">Vegan</option>
+              </select>
+              <div class="note">Figures are tonnes CO₂e per year.</div>
             </div>
-            <div class="video-info">
-              <p class="video-title">
-                Crazy Tik Toks Taken Moments Before DISASTER
-              </p>
-              <p class="video-author">
-                SSSniperWolf
-              </p>
-              <p class="video-stats">
-                12M views &#183; 1 year ago
-              </p>
+            <div class="field">
+              <label for="dietAdj">Diet adjustment (t CO₂e)</label>
+              <input id="dietAdj" type="number" step="0.1" value="0" />
             </div>
           </div>
-        </div>
 
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-4.webp">
-            <div class="video-time">22:09</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-4.jpeg">
+          <h3>Goods & services</h3>
+          <div class="row">
+            <div class="field">
+              <label for="spend">Annual spend on goods & services</label>
+              <input id="spend" type="number" min="0" step="1" placeholder="e.g. 12000" />
             </div>
-            <div class="video-info">
-              <p class="video-title">
-                The Simplest Math Problem No One Can Solve - Collatz Conjecture
-              </p>
-              <p class="video-author">
-                Veritasium
-              </p>
-              <p class="video-stats">
-                18M views &#183; 4 months ago
-              </p>
+            <div class="field">
+              <label for="intensity">Intensity (kg CO₂e / unit of currency)</label>
+              <input id="intensity" type="number" min="0" step="0.001" value="0.3" />
+              <div class="note">Default 0.3 kg per $/€/£. Adjust if needed.</div>
             </div>
           </div>
-        </div>
 
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-5.webp">
-            <div class="video-time">11:17</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-5.jpeg">
+          <details>
+            <summary>Advanced</summary>
+            <div class="row" style="margin-top:8px">
+              <div class="field">
+                <label for="petrolEF">Petrol EF (kg CO₂e per L)</label>
+                <input id="petrolEF" type="number" step="0.01" value="2.31" />
+              </div>
+              <div class="field">
+                <label for="dieselEF">Diesel EF (kg CO₂e per L)</label>
+                <input id="dieselEF" type="number" step="0.01" value="2.68" />
+              </div>
             </div>
-            <div class="video-info">
-              <p class="video-title">
-                Kadane's Algorithm to Maximum Sum Subarray Problem
-              </p>
-              <p class="video-author">
-                CS Dojo
-              </p>
-              <p class="video-stats">
-                519K views &#183; 5 years ago
-              </p>
-            </div>
-          </div>
-        </div>
+          </details>
 
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-6.webp">
-            <div class="video-time">19:59</div>
+          <div class="actions">
+            <button type="button" class="primary" id="calc">Calculate</button>
+            <button type="button" class="muted" id="save">Save to browser</button>
+            <button type="button" class="muted" id="load">Load</button>
+            <button type="button" class="warn" id="exportJson">Export JSON</button>
+            <button type="button" class="danger" id="reset">Reset</button>
           </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-6.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Anything You Can Fit In The Circle I’ll Pay For
-              </p>
-              <p class="video-author">
-                MrBeast
-              </p>
-              <p class="video-stats">
-                141M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-7.webp">
-            <div class="video-time">10:13</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-7.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Why Planes Don't Fly Over Tibet
-              </p>
-              <p class="video-author">
-                RealLifeLore
-              </p>
-              <p class="video-stats">
-                6.6M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-8.webp">
-            <div class="video-time">7:12</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-8.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Inside The World's Biggest Passenger Plane
-              </p>
-              <p class="video-author">
-                Tech Vision
-              </p>
-              <p class="video-stats">
-                3.7M views &#183; 10 months ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-9.webp">
-            <div class="video-time">13:17</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-9.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                The SECRET to Super Human STRENGTH
-              </p>
-              <p class="video-author">
-                ThenX
-              </p>
-              <p class="video-stats">
-                20M views &#183; 3 years ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-10.webp">
-            <div class="video-time">7:53</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-10.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                How The World's Largest Cruise Ship Makes 30,000 Meals Every Day
-              </p>
-              <p class="video-author">
-                Business Insider
-              </p>
-              <p class="video-stats">
-                14M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-11.webp">
-            <div class="video-time">4:10</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-11.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                Dubai's Crazy Underwater Train and Other Things #Only in Dubai
-              </p>
-              <p class="video-author">
-                Destination Tips
-              </p>
-              <p class="video-stats">
-                3M views &#183; 1 year ago
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-preview">
-          <div class="thumbnail-row">
-            <img class="thumbnail" src="thumbnails/thumbnail-12.webp">
-            <div class="video-time">4:51</div>
-          </div>
-          <div class="video-info-grid">
-            <div class="channel-picture">
-              <img class="profile-picture" src="channel-pictures/channel-12.jpeg">
-            </div>
-            <div class="video-info">
-              <p class="video-title">
-                What would happen if you didn’t drink water? - Mia Nacamulli
-              </p>
-              <p class="video-author">
-                TED-Ed
-              </p>
-              <p class="video-stats">
-                12M views &#183; 5 years ago
-              </p>
-            </div>
-          </div>
-        </div>
+        </form>
+        <p class="note">Units: annual values. This is a coarse estimate. Use your own factors if you have better data.</p>
       </section>
-    </main>
-  </body>
+
+      <aside class="card right" aria-labelledby="resultsTitle">
+        <h2 id="resultsTitle">Results</h2>
+        <div class="kpi">
+          <div class="num" id="totalT">0.00 t</div>
+          <div class="small">Total annual footprint</div>
+        </div>
+        <div class="chart"><canvas id="pie" width="600" height="600" aria-label="Breakdown chart"></canvas></div>
+        <div class="list" id="breakdown"></div>
+      </aside>
+    </div>
+
+    <footer>
+      <p>Method sketch: electricity = kWh × grid EF. Gas = kWh × gas EF. Car‑ICE = km × L/100 × fuel EF. EV = km × kWh/100 × grid EF. Flights = passenger‑km × EF. Diet = fixed per diet ± adjustment. Goods & services = spend × intensity. All converted to tonnes where shown. You control factors.</p>
+      <p>Made to run as a single static file. Host on GitHub Pages by committing as <code>index.html</code> in a repo and enabling Pages.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Utilities
+    const $ = sel => document.querySelector(sel);
+    const fmtT = n => (Math.round(n*100)/100).toFixed(2) + ' t';
+    const fmtKg = n => (Math.round(n*10)/10).toFixed(1) + ' kg';
+
+    // UI logic: toggles
+    const gridSel = $('#grid');
+    const gridCustomWrap = $('#gridCustomWrap');
+    gridSel.addEventListener('change', ()=>{
+      gridCustomWrap.style.display = gridSel.value === 'custom' ? 'block' : 'none';
+    });
+
+    const carType = $('#carType');
+    const lper100Wrap = $('#lper100Wrap');
+    const kwhper100Wrap = $('#kwhper100Wrap');
+    const toggleCarInputs = ()=>{
+      const isEV = carType.value === 'ev';
+      lper100Wrap.style.display = isEV ? 'none' : 'block';
+      kwhper100Wrap.style.display = isEV ? 'block' : 'none';
+    };
+    carType.addEventListener('change', toggleCarInputs);
+    toggleCarInputs();
+
+    // Core calculation
+    function calc(){
+      // Read values safely
+      const v = id => parseFloat($(id).value) || 0;
+      const elec = v('#elec');
+      const gridEF = gridSel.value === 'custom' ? v('#gridCustom') : parseFloat(gridSel.value);
+      const gas = v('#gas');
+      const heatEF = v('#heatFactor');
+
+      const carKm = v('#carKm');
+      const lper100 = v('#lper100');
+      const kwhper100 = v('#kwhper100');
+      const petrolEF = v('#petrolEF') || 2.31;
+      const dieselEF = v('#dieselEF') || 2.68;
+
+      const flightKm = v('#flightKm');
+      const flightEF = v('#flightFactor');
+
+      const dietT = parseFloat($('#diet').value) + v('#dietAdj');
+
+      const spend = v('#spend');
+      const intensity = v('#intensity');
+
+      // Components in kg
+      const electricityKg = elec * gridEF; // kg
+      const gasKg = gas * heatEF; // kg
+
+      let carKg = 0;
+      if(carType.value === 'ev'){
+        carKg = (carKm * (kwhper100/100)) * gridEF;
+      } else {
+        const fuelEF = carType.value === 'diesel' ? dieselEF : (carType.value === 'hybrid' ? 2.2 : petrolEF);
+        const liters = carKm * (lper100/100);
+        carKg = liters * fuelEF;
+      }
+
+      const flightsKg = flightKm * flightEF; // kg
+      const dietKg = dietT * 1000; // to kg
+      const goodsKg = spend * intensity; // kg
+
+      const parts = [
+        { key:'Electricity', kg:electricityKg },
+        { key:'Heating (gas)', kg:gasKg },
+        { key:'Car', kg:carKg },
+        { key:'Flights', kg:flightsKg },
+        { key:'Diet', kg:dietKg },
+        { key:'Goods & services', kg:goodsKg },
+      ];
+
+      const totalKg = parts.reduce((a,b)=>a+b.kg,0);
+      draw(parts, totalKg);
+      return {parts,totalKg};
+    }
+
+    // Draw breakdown list and pie chart
+    function draw(parts, totalKg){
+      // Breakdown list
+      const list = $('#breakdown');
+      list.innerHTML = '';
+      parts.forEach(p=>{
+        const t = p.kg/1000;
+        const share = totalKg? (p.kg/totalKg*100):0;
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `<div><strong>${p.key}</strong><div class="small">${fmtKg(p.kg)} · ${share.toFixed(1)}%</div></div><div>${fmtT(t)}</div>`;
+        list.appendChild(item);
+      });
+
+      // KPI
+      $('#totalT').textContent = fmtT(totalKg/1000);
+
+      // Pie
+      const c = document.getElementById('pie');
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      const cx = c.width/2, cy = c.height/2, r = Math.min(cx,cy)-20;
+      const palette = ['#5dd39e','#7aa7ff','#ffbd59','#ff6b6b','#b692ff','#66d2ff'];
+      let start = -Math.PI/2;
+      parts.forEach((p,i)=>{
+        const ang = totalKg? (p.kg/totalKg)*Math.PI*2 : 0;
+        ctx.beginPath();
+        ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy,r,start,start+ang);
+        ctx.closePath();
+        ctx.fillStyle = palette[i%palette.length];
+        ctx.fill();
+        start += ang;
+      });
+      // inner hole for donut
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(cx,cy,r*0.55,0,Math.PI*2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      // center text
+      ctx.font = '700 28px system-ui';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#e6eef7';
+      ctx.fillText(($("#totalT").textContent||'0 t'), cx, cy);
+    }
+
+    // Save/load/export
+    const fields = [
+      'elec','grid','gridCustom','gas','heatFactor','carKm','carType','lper100','kwhper100','flightKm','flightFactor','diet','dietAdj','spend','intensity','petrolEF','dieselEF'
+    ];
+
+    function save(){
+      const data = {};
+      fields.forEach(id=>{ data[id] = ($('#'+id).value); });
+      localStorage.setItem('ecoFootprint:v1', JSON.stringify(data));
+      alert('Saved to this browser.');
+    }
+    function load(){
+      const raw = localStorage.getItem('ecoFootprint:v1');
+      if(!raw){ alert('No saved data.'); return; }
+      const data = JSON.parse(raw);
+      fields.forEach(id=>{ if(data[id]!==undefined) $('#'+id).value = data[id]; });
+      // reapply toggles
+      gridSel.dispatchEvent(new Event('change'));
+      toggleCarInputs();
+      // recalc
+      const {parts,totalKg} = calc();
+      console.log(parts,totalKg);
+    }
+    function resetAll(){
+      document.getElementById('quiz').reset();
+      gridCustomWrap.style.display='none';
+      toggleCarInputs();
+      calc();
+    }
+    function exportJson(){
+      const {parts,totalKg} = calc();
+      const payload = { timestamp:new Date().toISOString(), inputs: {}, results:{ totalKg, parts } };
+      fields.forEach(id=> payload.inputs[id] = ($('#'+id).value));
+      const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'ecofootprint.json'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Wire up
+    $('#calc').addEventListener('click', calc);
+    $('#save').addEventListener('click', save);
+    $('#load').addEventListener('click', load);
+    $('#reset').addEventListener('click', resetAll);
+    $('#exportJson').addEventListener('click', exportJson);
+
+    // Live update on input
+    document.querySelectorAll('input,select').forEach(el=>{
+      el.addEventListener('input', ()=>{ calc(); });
+    });
+
+    // Initial render
+    calc();
+  </script>
+</body>
 </html>

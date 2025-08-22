@@ -5,7 +5,7 @@ const wall = document.getElementById('wall');
 
 let scale = 1; // zoom level
 
-// Load saved bubbles from localStorage on startup
+// ✅ Load saved bubbles from localStorage on startup
 window.addEventListener('load', () => {
     const savedBubbles = JSON.parse(localStorage.getItem('bubbles')) || [];
     savedBubbles.forEach(data => {
@@ -20,8 +20,8 @@ form.addEventListener('submit', function(e) {
     if (!name || !message) return;
 
     const timestamp = new Date().toLocaleString();
-    const x = Math.random() * (wall.scrollWidth - 150);
-    const y = Math.random() * (wall.scrollHeight - 50);
+    const x = Math.random() * (wall.offsetWidth - 150);
+    const y = Math.random() * (wall.offsetHeight - 50);
     const color = `hsl(${Math.random() * 360}, 70%, 50%)`;
 
     createBubble(name, message, timestamp, x, y, color, true);
@@ -29,12 +29,13 @@ form.addEventListener('submit', function(e) {
     messageInput.value = '';
 });
 
-// Create and animate a bubble
+// ✅ Create and animate a bubble
 function createBubble(name, message, timestamp, x, y, color, save) {
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
     bubble.innerHTML = `<span class="name">${name}</span>${message}<span class="timestamp">${timestamp}</span>`;
     bubble.dataset.author = name;
+    bubble.dataset.timestamp = timestamp; // unique id for storage deletion
 
     bubble.style.left = x + 'px';
     bubble.style.top = y + 'px';
@@ -44,7 +45,7 @@ function createBubble(name, message, timestamp, x, y, color, save) {
     bubble.addEventListener('click', () => {
         if (nameInput.value.trim() === bubble.dataset.author) {
             bubble.remove();
-            removeBubbleFromStorage(name, message, timestamp);
+            removeBubbleFromStorage(timestamp);
         } else {
             alert("You can only delete your own bubbles!");
         }
@@ -58,7 +59,7 @@ function createBubble(name, message, timestamp, x, y, color, save) {
     }
 }
 
-// Animate bubbles drifting
+// ✅ Animate bubbles drifting
 function driftBubble(bubble) {
     let x = parseFloat(bubble.style.left);
     let y = parseFloat(bubble.style.top);
@@ -70,8 +71,8 @@ function driftBubble(bubble) {
         x += dx;
         y += dy;
 
-        if (x < 0 || x > wall.scrollWidth - bubble.offsetWidth) dx = -dx;
-        if (y < 0 || y > wall.scrollHeight - bubble.offsetHeight) dy = -dy;
+        if (x < 0 || x > wall.offsetWidth - bubble.offsetWidth) dx = -dx;
+        if (y < 0 || y > wall.offsetHeight - bubble.offsetHeight) dy = -dy;
 
         bubble.style.left = x + 'px';
         bubble.style.top = y + 'px';
@@ -81,21 +82,21 @@ function driftBubble(bubble) {
     move();
 }
 
-// Save bubble to localStorage
+// ✅ Save bubble to localStorage
 function saveBubbleToStorage(bubbleData) {
     const bubbles = JSON.parse(localStorage.getItem('bubbles')) || [];
     bubbles.push(bubbleData);
     localStorage.setItem('bubbles', JSON.stringify(bubbles));
 }
 
-// Remove bubble from localStorage
-function removeBubbleFromStorage(name, message, timestamp) {
+// ✅ Remove bubble from localStorage using timestamp
+function removeBubbleFromStorage(timestamp) {
     let bubbles = JSON.parse(localStorage.getItem('bubbles')) || [];
-    bubbles = bubbles.filter(b => !(b.name === name && b.message === message && b.timestamp === timestamp));
+    bubbles = bubbles.filter(b => b.timestamp !== timestamp);
     localStorage.setItem('bubbles', JSON.stringify(bubbles));
 }
 
-// Zoom functionality
+// ✅ Zoom functionality
 wall.addEventListener('wheel', function(e) {
     e.preventDefault();
     scale += e.deltaY * -0.001;

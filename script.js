@@ -1,4 +1,3 @@
-// Get Firestore exports from index.html
 const { collection, addDoc, onSnapshot, deleteDoc, doc } = window.firestoreExports;
 const db = window.db;
 const messagesRef = collection(db, "messages");
@@ -24,12 +23,11 @@ form.addEventListener("submit", async (e) => {
   messageInput.value = "";
 });
 
-// Real-time updates from Firestore
+// Real-time updates
 onSnapshot(messagesRef, (snapshot) => {
   wall.innerHTML = "";
   snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    createBubble(docSnap.id, data);
+    createBubble(docSnap.id, docSnap.data());
   });
 });
 
@@ -38,10 +36,11 @@ function createBubble(id, { name, message, timestamp, x, y, color }) {
   const bubble = document.createElement("div");
   bubble.className = "bubble";
   bubble.innerHTML = `<span class="name">${name}</span>${message}<span class="timestamp">${timestamp}</span>`;
-  bubble.style.left = x + "px";
-  bubble.style.top = y + "px";
+  bubble.style.left = `${x}px`;
+  bubble.style.top = `${y}px`;
   bubble.style.backgroundColor = color;
 
+  // Allow deletion by same-name user
   bubble.addEventListener("click", async () => {
     if (nameInput.value.trim() === name) {
       await deleteDoc(doc(db, "messages", id));
@@ -51,4 +50,29 @@ function createBubble(id, { name, message, timestamp, x, y, color }) {
   });
 
   wall.appendChild(bubble);
+
+  // Random movement
+  animateBubble(bubble);
+}
+
+function animateBubble(bubble) {
+  let dx = (Math.random() - 0.5) * 2; // random horizontal movement
+  let dy = (Math.random() - 0.5) * 2; // random vertical movement
+
+  function move() {
+    let rect = bubble.getBoundingClientRect();
+    let wallRect = wall.getBoundingClientRect();
+
+    let left = parseFloat(bubble.style.left);
+    let top = parseFloat(bubble.style.top);
+
+    if (left <= 0 || left + rect.width >= wallRect.width) dx *= -1;
+    if (top <= 0 || top + rect.height >= wallRect.height) dy *= -1;
+
+    bubble.style.left = `${left + dx}px`;
+    bubble.style.top = `${top + dy}px`;
+
+    requestAnimationFrame(move);
+  }
+  move();
 }

@@ -4,7 +4,7 @@ body {
   font-family: Arial, sans-serif;
   background: url('forest-background.jpg') no-repeat center center fixed;
   background-size: cover;
-  overflow: hidden;
+  /* REMOVE overflow hidden */
 }
 
 h1 {
@@ -45,8 +45,8 @@ form button:hover {
 #wall {
   position: relative;
   width: 100%;
-  height: calc(100vh - 100px);
-  overflow: hidden;
+  min-height: 70vh; /* Allows scroll */
+  overflow: hidden; /* Only clips bubbles, not page */
 }
 
 /* Bubble Styling */
@@ -75,7 +75,7 @@ form button:hover {
   margin-top: 5px;
 }
 
-/* Bubble Floating Animation */
+/* Floating Animation */
 @keyframes float {
   0% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-15px) rotate(2deg); }

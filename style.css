@@ -45,8 +45,10 @@ form button:hover {
 #wall {
   position: relative;
   width: 100%;
-  min-height: 70vh; /* Allows scroll */
-  overflow: hidden; /* Only clips bubbles, not page */
+  height: calc(100dvh - 100px); /* dynamic viewport height */
+  overflow: auto; /* allow scroll if needed */
+  padding-bottom: 80px; /* space so bubbles aren't behind mobile bars */
+  box-sizing: border-box;
 }
 
 /* Bubble Styling */
@@ -87,4 +89,9 @@ form button:hover {
   h1 { font-size: 1.5rem; }
   form input, form button { width: 90%; font-size: 1rem; }
   .bubble { min-width: 80px; max-width: 150px; font-size: 0.9rem; }
+
+  #wall {
+    height: calc(100dvh - 120px); /* extra safe space */
+    padding-bottom: 100px;
+  }
 }

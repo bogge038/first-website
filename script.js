@@ -1,7 +1,16 @@
-const { collection, addDoc, onSnapshot, deleteDoc, doc } = window.firestoreExports;
+// Import Firestore functions from the global window object
+const { 
+  collection, addDoc, onSnapshot, deleteDoc, doc, 
+  query, orderBy, serverTimestamp 
+} = window.firestoreExports;
+
 const db = window.db;
 const messagesRef = collection(db, "messages");
 
+// Create a query that orders by server timestamp
+const q = query(messagesRef, orderBy("createdAt", "asc"));
+
+// Get DOM elements
 const form = document.getElementById("messageForm");
 const nameInput = document.getElementById("nameInput");
 const messageInput = document.getElementById("messageInput");
@@ -14,17 +23,22 @@ form.addEventListener("submit", async (e) => {
   const message = messageInput.value.trim();
   if (!name || !message) return;
 
-  const timestamp = new Date().toLocaleString();
   const x = Math.random() * (wall.offsetWidth - 150);
   const y = Math.random() * (wall.offsetHeight - 50);
   const color = `hsl(${Math.random() * 360}, 70%, 50%)`;
 
-  await addDoc(messagesRef, { name, message, timestamp, x, y, color });
+  await addDoc(messagesRef, { 
+    name, 
+    message, 
+    createdAt: serverTimestamp(),  // ✅ Real timestamp
+    x, y, color 
+  });
+
   messageInput.value = "";
 });
 
 // Real-time updates
-onSnapshot(messagesRef, (snapshot) => {
+onSnapshot(q, (snapshot) => {
   wall.innerHTML = "";
   snapshot.forEach((docSnap) => {
     createBubble(docSnap.id, docSnap.data());
@@ -32,10 +46,21 @@ onSnapshot(messagesRef, (snapshot) => {
 });
 
 // Create a bubble
-function createBubble(id, { name, message, timestamp, x, y, color }) {
+function createBubble(id, { name, message, createdAt, x, y, color }) {
   const bubble = document.createElement("div");
   bubble.className = "bubble";
-  bubble.innerHTML = `<span class="name">${name}</span>${message}<span class="timestamp">${timestamp}</span>`;
+
+  // Format timestamp if available
+  let timestamp = "";
+  if (createdAt && createdAt.toDate) {
+    timestamp = createdAt.toDate().toLocaleString();
+  }
+
+  bubble.innerHTML = `
+    <span class="name">${name}</span>
+    ${message}
+    <span class="timestamp">${timestamp}</span>
+  `;
   bubble.style.left = `${x}px`;
   bubble.style.top = `${y}px`;
   bubble.style.backgroundColor = color;
@@ -51,17 +76,18 @@ function createBubble(id, { name, message, timestamp, x, y, color }) {
 
   wall.appendChild(bubble);
 
-  // Random movement
+  // Animate bubble movement
   animateBubble(bubble);
 }
 
+// Random bubble movement
 function animateBubble(bubble) {
-  let dx = (Math.random() - 0.5) * 2; // random horizontal movement
-  let dy = (Math.random() - 0.5) * 2; // random vertical movement
+  let dx = (Math.random() - 0.5) * 2; // horizontal
+  let dy = (Math.random() - 0.5) * 2; // vertical
 
   function move() {
-    let rect = bubble.getBoundingClientRect();
-    let wallRect = wall.getBoundingClientRect();
+    const rect = bubble.getBoundingClientRect();
+    const wallRect = wall.getBoundingClientRect();
 
     let left = parseFloat(bubble.style.left);
     let top = parseFloat(bubble.style.top);
